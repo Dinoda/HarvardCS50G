@@ -9,14 +9,26 @@ function Board:init()
 		self.cells[i] = Cell(GAME_PADDING_LEFT + x * CELL_SIDE,  GAME_PADDING_TOP + y * CELL_SIDE)
 	end
 
+	self.player = Entity(
+		math.random(GAME_WIDTH) + GAME_PADDING_LEFT,
+		math.random(GAME_HEIGHT) + GAME_PADDING_TOP, 
+		playerManager)
+
+	self.target = Entity(
+		math.random(GAME_WIDTH) + GAME_PADDING_LEFT, 
+		math.random(GAME_HEIGHT) + GAME_PADDING_TOP)
+
 	self.enemies = {}
 
 	for i = 1, ENEMY_NUMBER do
-		self.enemies[i] = Entity(math.random(GAME_WIDTH) + GAME_PADDING_LEFT, math.random(GAME_HEIGHT) + GAME_PADDING_TOP)
+		self.enemies[i] = Entity(math.random(GAME_WIDTH) + GAME_PADDING_LEFT, math.random(GAME_HEIGHT) + GAME_PADDING_TOP, enemyManager)
 	end
 end
 
 function Board:update(dt)
+	
+	self.player:update(dt)
+
 	for i = 1, ENEMY_NUMBER do
 		self.enemies[i]:update(dt)
 	end
@@ -59,6 +71,14 @@ function Board:render()
 	end
 
 	love.graphics.setColor(0,255,0)
+
+	self.player:render()
+
+	love.graphics.setColor(0, 0, 255)
+
+	self.target:render()
+
+	love.graphics.setColor(255, 0, 0)
 
 	for i = 1, ENEMY_NUMBER do
 		self.enemies[i]:render()

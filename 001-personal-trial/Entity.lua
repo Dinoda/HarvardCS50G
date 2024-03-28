@@ -1,63 +1,66 @@
 Entity = Class{}
 
-function Entity:init(x, y)
+function Entity:init(x, y, mm)
+	self.moveManager = mm
+
+	-- General information
 	self.x = x
 	self.y = y
-	self.t = 0
-	self.targetAngle = math.random() * math.pi * 2
-	self.radius = ENTITY_RADIUS
-	self.angle = self.targetAngle
-	self.angleChange = 0
+
+	self.angle = math.random() * math.pi * 2
+
+	-- Movement information
 	self.speed = 0
-	self.acceleration = ENTITY_ACCELERATION
+	self.angleChange = 0
+
+	-- Decision information
 	self.situation = 0
+	self.t = 0
+
+	-- Basic characteristics
+	self.radius = ENTITY_RADIUS
+	self.acceleration = ENTITY_ACCELERATION
+
+	-- Setup by the manager
+	if self.moveManager then
+		self.moveManager:setting(self)
+	end
 end
 
 -- [[
 -- Initial update method called each update
 -- ]]
 function Entity:update(dt)
-	self.t = self.t + dt
+	if self.moveManager then
+		self.moveManager:update(self, dt)
+	end
+end
 
+function Entity:move(dt)
+	self.t = self.t + dt
 	self.x = self.x + self.speed * math.cos(self.angle)
 	self.y = self.y + self.speed * math.sin(self.angle)
-
-	if self.situation == ENTITY_SITUATION_RUNNING then
-		self.speed = math.min(self.speed + self.acceleration * dt, ENTITY_MAX_SPEED)
-		if self.t > 2 then
-			if math.random() + self.t - 2 > 1 then
-				self:updateSituation(ENTITY_SITUATION_TURNING)
-				self.angleChange = (math.random() * 2 - 1) * math.pi
-			end
-		end
-	elseif self.situation == ENTITY_SITUATION_TURNING then
-		self:turn(dt)
-	end
-
-	self:reboundToGameLimit()
 end
 
-function Entity:turn(dt)
-	-- We are turning, decelerate
-	self.speed = math.max(self.speed * (1 - (self.acceleration * dt)), self.acceleration)
+function Entity:accelerate(dt)
+	self.speed = math.min(self.speed + self.acceleration * dt, ENTITY_MAX_SPEED)
+end
 
+function Entity:turn(angle, dt)
+	self.speed = math.max(self.speed * (1 - self.acceleration * dt), self.acceleration)
+	
 	change = self:getAngularSpeed() * dt
 
-	-- Turn left or right ?
-	if self.angleChange > 0 then
-		change = math.min(change, self.angleChange)
+	if angle > 0 then
+		change = math.min(change, angle)
 	else
-		change = math.max(-change, self.angleChange)
+		change = math.max(-change, angle)
 	end
 
-	self.angleChange = self.angleChange - change
 	self.angle = (self.angle + change) % CIRCLE
 
-	if self.angleChange == 0 then
-		self:updateSituation(ENTITY_SITUATION_RUNNING)
-	end
+	return change
 end
-
 --[[ ====================
 --   Collision management 
 --   ==================== ]]
@@ -109,10 +112,12 @@ end
 -- Make the entity rebound in a direction (game limit, or cell side)
 function Entity:rebound(direction)
 	if direction == 'top' then
+		-- We are not in the standard standard coordinate system, as Y goes down
 		if self.angle > math.pi then
 			self:reboundVertically()
 		end
 	elseif direction == 'bottom' then
+		-- We are not in the standard standard coordinate system, as Y goes down
 		if self.angle < math.pi then
 			self:reboundVertically()
 		end

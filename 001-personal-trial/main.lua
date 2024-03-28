@@ -6,9 +6,15 @@ require 'const'
 
 Class = require 'class'
 
+require 'EnemyEntity'
+require 'PlayerEntity'
+
 require 'Cell'
 require 'Entity'
 require 'Board'
+
+enemyManager = EnemyEntity()
+playerManager = PlayerEntity()
 
 function love.load()
 	math.randomseed(os.time())
