@@ -1,5 +1,14 @@
 Entity = Class{}
 
+--[[
+--
+-- This class represent a non-immobile entity
+--
+-- The render method must be overridden by the extending class.
+--
+-- An entity possess a model, an x and y position and a scale.
+--
+--]]
 function Entity:init(model, x, y, scale) 
 	self.model = model
 	self.x = x

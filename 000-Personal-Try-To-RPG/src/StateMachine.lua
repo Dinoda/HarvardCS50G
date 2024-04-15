@@ -1,3 +1,9 @@
+require 'src/states/BaseState'
+require 'src/states/StartState'
+require 'src/states/LevelSelectState'
+require 'src/states/LevelState'
+require 'src/states/MoveState'
+
 StateMachine = Class{}
 
 function StateMachine:init(states)
@@ -18,9 +24,9 @@ function StateMachine:render()
 	self.current:render()
 end
 
-function StateMachine:changeState(name)
+function StateMachine:changeState(name, options)
 	assert(self.states[name], "Unknown state for the machine")
 	self.current:exit()
 	self.current = self.states[name]()
-	self.current:enter()
+	self.current:enter(options)
 end

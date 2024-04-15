@@ -1,0 +1,8 @@
+require 'src/entity/Model'
+require 'src/entity/EntityStateMachine'
+require 'src/entity/Entity'
+require 'src/entity/Character'
+require 'src/entity/characterStates/EntityBaseState'
+require 'src/entity/characterStates/IdleState'
+require 'src/entity/characterStates/WalkingState'
+require 'src/entity/characterStates/RunningState'

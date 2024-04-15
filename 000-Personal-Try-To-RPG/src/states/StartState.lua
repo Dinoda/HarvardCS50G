@@ -13,7 +13,7 @@ function StartState:enter()
 	-- Set char to double side
 	self.char:setScale(4)
 
-	self.titleImage = love.graphics.newImage('assets/TTRPG_title.png')
+	self.titleImage = Image('assets/menu/TTRPG_title.png')
 end
 
 function StartState:update(dt)

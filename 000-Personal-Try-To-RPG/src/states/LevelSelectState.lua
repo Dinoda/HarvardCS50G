@@ -1,6 +1,7 @@
 BORDER_IMAGE_SCALE = 1.4
 PADDING = 100
 INTER_LEVEL_PADDING = 70
+
 LevelSelectState = Class{__includes = BaseState}
 
 function LevelSelectState:init()
@@ -8,6 +9,16 @@ function LevelSelectState:init()
 	self.border = love.graphics.newImage('assets/border-elem-09.png')
 	self.arrow = love.graphics.newImage('assets/arrow_icon.png')
 	self.levels = love.filesystem.getDirectoryItems('level')
+
+	for k, level in pairs(self.levels) do
+		local it = string.gmatch(level, '(.+)%pttrpg')
+
+		self.levels[k] = nil
+		for n in it do
+			self.levels[k] = n
+		end
+	end
+
 	self.levelNumber = #(self.levels) 
 
 	self.border_x = WINDOW_WIDTH / 2 - self.border:getWidth() / BORDER_IMAGE_SCALE
@@ -22,8 +33,13 @@ end
 
 function LevelSelectState:update(dt)
 	if love.keyboard.pressedKeys['return'] then
-		love.keyboard.pressedKeys['return'] = false
 		-- TODO : Implement level validation
+		level = Level(self.levels[self.selection + 1])
+		love.keyboard.pressedKeys['return'] = false
+	end
+	
+	gameMachine:changeState('level')
+
 	if love.keyboard.pressedKeys['up'] then
 		self.selection = math.max(0, self.selection - 1)
 	elseif love.keyboard.pressedKeys['down'] then
@@ -37,19 +53,19 @@ function LevelSelectState:render()
 	self.underState:render()
 
 	love.graphics.draw(self.border, 
-		self.border_x, 
-		self.border_y,
-		0, 
-		BORDER_IMAGE_SCALE, 
-		BORDER_IMAGE_SCALE)
-	
+	self.border_x, 
+	self.border_y,
+	0, 
+	BORDER_IMAGE_SCALE, 
+	BORDER_IMAGE_SCALE)
+
 	love.graphics.draw(self.arrow, 
-		self.border_x + PADDING - 40,
-		self.border_y + PADDING + INTER_LEVEL_PADDING * self.selection - self.arrow:getHeight() * 0.0025,
-		0,
-		0.01,
-		0.01
-		)
+	self.border_x + PADDING - 40,
+	self.border_y + PADDING + INTER_LEVEL_PADDING * self.selection - self.arrow:getHeight() * 0.0025,
+	0,
+	0.01,
+	0.01
+	)
 
 	for k, level in pairs(self.levels) do
 		love.graphics.print(level, 

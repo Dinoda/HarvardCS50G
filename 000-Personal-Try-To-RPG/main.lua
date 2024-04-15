@@ -1,52 +1,15 @@
-require 'const' 
+require 'src/const' 
 
-Class = require 'class'
+Class = require 'lib/class'
 
-require 'StateMachine'
-require 'states/BaseState'
-require 'states/StartState'
-require 'states/LevelSelectState'
-require 'states/MoveState'
+require 'src/visual/Image'
+require 'src/visual/Sheet'
 
-require 'entity'
+require 'src/StateMachine'
+require 'src/entity'
+require 'src/level/Level'
 
-gDirectionToYSpeed = {
-	[0] = 1,
-	[1] = -1,
-	[2] = 0,
-	[3] = 0
-}
-
-gDirectionToXSpeed = {
-	[0] = 0,
-	[1] = 0,
-	[2] = 1,
-	[3] = -1
-}
-
-gButtonToDirection = {
-	['down'] = 0,
-	['up'] = 1,
-	['right'] = 2,
-	['left'] = 3
-}
-
-gPlayerOutfits = {
-	[0] = 'assets/char_a_p1/1out/char_a_p1_1out_boxr_v01.png',
-	[1] = 'assets/char_a_p1/1out/char_a_p1_1out_fstr_v04.png',
-	[2] = 'assets/char_a_p1/1out/char_a_p1_1out_pfpn_v04.png',
-	[3] = 'assets/char_a_p1/1out/char_a_p1_1out_undi_v01.png'
-}
-
-gPlayerCurrentOutfit = 0
-
-gPlayerModel = Model('assets/char_a_p1/char_a_p1_0bas_humn_v01.png')
-
-gPlayerModel:append(gPlayerOutfits[0])
-
-gPlayerCharacter = Character(gPlayerModel)
-
-gMenuFont = love.graphics.newFont('assets/Roboto-Medium.ttf', 20)
+require 'src/globals'
 
 function love.load()
 	math.randomseed(os.time())
@@ -62,6 +25,7 @@ function love.load()
 	gameMachine = StateMachine({
 		['start'] = function() return StartState() end,
 		['levelSelect'] = function() return LevelSelectState() end,
+		['level'] = function() return LevelState() end,
 		['move'] = function() return MoveState() end,
 	})
 
